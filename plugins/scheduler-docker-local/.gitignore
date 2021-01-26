@@ -1,0 +1,11 @@
+/subcommands/*
+/check-deploy
+/commands
+/core-post-deploy
+/help-functions
+/install
+/internal-functions
+/post-*
+/pre-*
+/report
+/scheduler-*
