@@ -1,6 +1,7 @@
 package scheduler_docker_local
 
 import (
+	"fmt"
 	"github.com/dokku/dokku/plugins/common"
 	"github.com/dokku/dokku/plugins/config"
 	"log"
@@ -122,8 +123,21 @@ func TriggerSchedulerRun(scheduler, appName string, envCount int) error {
 }
 
 func TriggerSchedulerRunList(scheduler, appName string) error {
-	// TODO: implement
-	log.Fatal("not implemented")
+	if err := common.VerifyAppName(appName); err != nil {
+		return err
+	}
+	if scheduler != "docker-local" {
+		return nil
+	}
+
+	common.LogInfo2Quiet(fmt.Sprintf("%s run containers", appName))
+	cmd := common.NewShellCmdWithArgs(
+		common.DockerBin(), "ps",
+		"--filter", fmt.Sprintf("label=com.dokku.app-name=%s", appName),
+		"--filter", "label=com.dokku.container-type=run",
+		"--format", "table {{.Names}}\t{{.Command}}\t{{.RunningFor}}",
+	)
+	cmd.Execute()
 	return nil
 }
 
