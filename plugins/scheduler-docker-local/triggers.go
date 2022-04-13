@@ -175,8 +175,12 @@ func TriggerSchedulerRegisterRetired(appName, containerID string, wait int) erro
 
 // TriggerSchedulerRetire retires all old containers once they have aged out
 func TriggerSchedulerRetire(scheduler, appName string) error {
-	// TODO: implement
-	log.Fatal("not implemented")
+	if err := RetireContainers(scheduler, appName); err != nil {
+		return err
+	}
+	if err := RetireImages(scheduler, appName); err != nil {
+		return err
+	}
 	return nil
 }
 
