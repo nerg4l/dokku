@@ -1,6 +1,8 @@
 package scheduler_docker_local
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/dokku/dokku/plugins/common"
 	"github.com/dokku/dokku/plugins/config"
@@ -122,8 +124,52 @@ func TriggerSchedulerLogsFailed(scheduler, appName string) error {
 
 // TriggerSchedulerRegisterRetired register a container for retiring
 func TriggerSchedulerRegisterRetired(appName, containerID string, wait int) error {
-	// TODO: implement
-	log.Fatal("not implemented")
+	if containerID == "" {
+		return nil
+	}
+
+	var imageID string
+	if os.Getenv("DOKKU_SKIP_IMAGE_RETIRE") != "true" {
+		cmd := common.NewShellCmdWithArgs(
+			common.DockerBin(), "container", "inspect", containerID,
+			"--format", "{{.Image}}",
+		)
+		cmd.ShowOutput = false
+		output, _ := cmd.Output()
+		imageID = string(output[bytes.Index(output, []byte{':'})+1:])
+	}
+	if err := RegisterRetired("container", appName, containerID, wait); err != nil {
+		return err
+	}
+
+	if imageID != "" && os.Getenv("DOKKU_SKIP_IMAGE_CLEANUP_REGISTRATION") == "" {
+		cmd := common.NewShellCmdWithArgs(
+			common.DockerBin(), "image", "inspect",
+			"--format", `{{ index .Config.Labels "com.dokku.docker-image-labeler/alternate-tags" }}`,
+			imageID,
+		)
+		cmd.ShowOutput = false
+		output, _ := cmd.Output()
+		var altImageTags []string
+		json.Unmarshal(output, &altImageTags)
+
+		if err := RegisterRetired("image", appName, imageID, wait); err != nil {
+			return err
+		}
+		if len(altImageTags) > 0 {
+			cmd := common.NewShellCmdWithArgs(
+				common.DockerBin(), "image", "inspect",
+				"--format", "{{ .ID }}",
+				altImageTags[0],
+			)
+			cmd.ShowOutput = false
+			output, _ := cmd.Output()
+			altImageID := string(output[bytes.Index(output, []byte{':'})+1:])
+			if err := RegisterRetired("image", appName, altImageID, wait); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
