@@ -102,7 +102,7 @@ func main() {
 		appName := flag.Arg(1)
 		// TODO: check default value
 		envCount := common.ToInt(flag.Arg(2), 0)
-		err = scheduler_docker_local.TriggerSchedulerRun(scheduler, appName, envCount)
+		err = scheduler_docker_local.TriggerSchedulerRun(scheduler, appName, flag.Args()[3:3+envCount]...)
 	case "scheduler-run-list":
 		scheduler := flag.Arg(0)
 		appName := flag.Arg(1)

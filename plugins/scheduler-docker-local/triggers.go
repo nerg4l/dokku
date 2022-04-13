@@ -8,120 +8,140 @@ import (
 	"os"
 )
 
+// TriggerCheckDeploy scheduler-docker-local check-deploy plugin trigger
 func TriggerCheckDeploy(appName, containerID, containerType, port, ip, index string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerCorePostDeploy scheduler-docker-local core-post-deploy state cleanup
 func TriggerCorePostDeploy(appName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerInstall scheduler-docker-local install plugin trigger
 func TriggerInstall() error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerPostAppCloneSetup removes docker-local files when setting up a clone
 func TriggerPostAppCloneSetup(oldAppName, newAppName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerPostAppRenameSetup updates settings when renaming an app
 func TriggerPostAppRenameSetup(oldAppName, newAppName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerPostCreate scheduler-docker-local post-create plugin trigger
 func TriggerPostCreate(appName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerPostDelete scheduler-docker-local post-delete plugin trigger
 func TriggerPostDelete(appName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerPreDeploy scheduler-docker-local pre-deploy plugin trigger
 func TriggerPreDeploy(appName, imageTag string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerPreRestore scheduler-docker-local pre-restore plugin trigger
 func TriggerPreRestore(scheduler string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerAppStatus fetches the status for a given app
 func TriggerSchedulerAppStatus(scheduler, appName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerDeploy deploys an image tag for a given application
 func TriggerSchedulerDeploy(scheduler, appName, imageTag, processType string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerEnter enter a running container
 func TriggerSchedulerEnter(scheduler, appName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerInspect scheduler-docker-local scheduler-inspect plugin trigger
 func TriggerSchedulerInspect(scheduler, appName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerIsDeployed checks if an app is deployed
 func TriggerSchedulerIsDeployed(scheduler, appName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerLogs cheduler-docker-local scheduler-logs plugin trigger
 func TriggerSchedulerLogs(scheduler, appName, processType string, tail, prettyPrint bool, num int) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerLogsFailed scheduler-docker-local scheduler-logs-failed plugin trigger
 func TriggerSchedulerLogsFailed(scheduler, appName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerRegisterRetired register a container for retiring
 func TriggerSchedulerRegisterRetired(appName, containerID string, wait int) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerRetire retires all old containers once they have aged out
 func TriggerSchedulerRetire(scheduler, appName string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
-func TriggerSchedulerRun(scheduler, appName string, envCount int) error {
+// TriggerSchedulerRun runs command in container based on app image
+func TriggerSchedulerRun(scheduler, appName string, runEnv ...string) error {
 	// TODO: implement
 	log.Fatal("not implemented")
 	return nil
 }
 
+// TriggerSchedulerRunList runs command in container based on app image
 func TriggerSchedulerRunList(scheduler, appName string) error {
 	if err := common.VerifyAppName(appName); err != nil {
 		return err
@@ -141,6 +161,7 @@ func TriggerSchedulerRunList(scheduler, appName string) error {
 	return nil
 }
 
+// TriggerSchedulerStop scheduler-docker-local scheduler-stop plugin trigger
 func TriggerSchedulerStop(scheduler, appName string, removeContainers bool) error {
 	if scheduler != "docker-local" {
 		return nil
