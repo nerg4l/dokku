@@ -1,13 +1,17 @@
 package scheduler_docker_local
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/dokku/dokku/plugins/common"
 	"github.com/dokku/dokku/plugins/config"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 // TriggerCheckDeploy scheduler-docker-local check-deploy plugin trigger
@@ -117,8 +121,58 @@ func TriggerSchedulerLogs(scheduler, appName, processType string, tail, prettyPr
 
 // TriggerSchedulerLogsFailed scheduler-docker-local scheduler-logs-failed plugin trigger
 func TriggerSchedulerLogsFailed(scheduler, appName string) error {
-	// TODO: implement
-	log.Fatal("not implemented")
+	failedContainerFile := filepath.Join(common.MustGetEnv("DOKKU_LIB_ROOT"), "data", "scheduler-docker-local", appName, "failed-containers")
+
+	if scheduler != "docker-local" {
+		return nil
+	}
+
+	f, err := os.Open(failedContainerFile)
+	if os.IsNotExist(err) {
+		common.LogWarn("No failed containers found")
+		return nil
+	} else if err != nil {
+		return err
+	}
+
+	var runningCIDs, deadCIDs []string
+	s := bufio.NewScanner(f)
+	for s.Scan() {
+		cid := strings.Split(s.Text(), " ")[0]
+		cmd := common.NewShellCmdWithArgs(common.DockerBin(), "container", "inspect", cid)
+		if cmd.Execute() {
+			runningCIDs = append(runningCIDs, cid)
+		} else {
+			deadCIDs = append(deadCIDs, cid)
+		}
+	}
+	if err := s.Err(); err != nil {
+		return err
+	}
+
+	for _, cid := range deadCIDs {
+		common.LogWarn(fmt.Sprintf("App container %s no longer running", cid))
+		common.NewShellCmdWithArgs("sed", "-i", fmt.Sprintf(`"/%s/d"`, cid), fmt.Sprintf("%q", failedContainerFile))
+	}
+
+	if len(runningCIDs) == 0 {
+		common.LogWarn("No failed containers found")
+		return nil
+	}
+
+	var logsCmd strings.Builder
+	for i, cid := range runningCIDs {
+		logsCmd.WriteString(fmt.Sprintf("(%s logs %s 2>&1)", common.DockerBin(), cid))
+		if (i + 1) < len(runningCIDs) {
+			logsCmd.WriteString("& ")
+		} else {
+			logsCmd.WriteString("; ")
+		}
+	}
+	cmd := common.NewShellCmdWithArgs("bash", "-c", fmt.Sprintf("%q", logsCmd.String()))
+	if cmd.Execute() {
+		return errors.New("Failed to collect failed logs")
+	}
 	return nil
 }
 
