@@ -1,4 +1,4 @@
-FROM golang:1.24.2
+FROM golang:1.24.4
 
 EXPOSE 3000/tcp
 
