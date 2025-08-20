@@ -5,10 +5,10 @@ go 1.23.2
 toolchain go1.24.1
 
 require (
-	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
-	google.golang.org/grpc v1.72.0
+	golang.org/x/net v0.41.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
+	google.golang.org/grpc v1.75.0
 )
 
 require (
@@ -16,4 +16,4 @@ require (
 	google.golang.org/protobuf v1.36.6
 )
 
-require google.golang.org/genproto/googleapis/rpc v0.0.0-20250218202821-56aae31c358a // indirect
+require google.golang.org/genproto/googleapis/rpc v0.0.0-20250707201910-8d1bb00bc6a7 // indirect
